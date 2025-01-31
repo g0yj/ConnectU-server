@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: ConnectU-server
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
