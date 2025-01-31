@@ -5,6 +5,7 @@ import com.lms.api.admin.service.dto.Login;
 import com.lms.api.common.code.LoginType;
 import com.lms.api.common.controller.dto.LoginRequest;
 import com.lms.api.common.controller.dto.LoginResponse;
+import com.lms.api.common.service.dto.LoginInfo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,12 @@ public class AdminController {
         log.debug("login: id={}, token={}", loginRequest.getId(), login.getToken());
 
         return adminControllerMapper.toLoginResponse(login);
+    }
+
+    @PostMapping("/logout")
+    public void logout(LoginInfo loginInfo) {
+        log.debug("logout: token={}", loginInfo.getToken());
+        loginService.logoutAdmin(loginInfo.getToken());
     }
 
 }

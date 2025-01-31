@@ -65,4 +65,10 @@ public class LoginService {
                         .build())
                 .orElseThrow(() -> new AppException(AppErrorCode.LOGIN_REQUIRED));
     }
+
+    @Transactional
+    public void logoutAdmin(String token) {
+        userLoginRepository.findByToken(token)
+                .ifPresent(userLoginEntity -> userLoginRepository.deleteAllByUserEntity(userLoginEntity.getUserEntity()));
+    }
 }
