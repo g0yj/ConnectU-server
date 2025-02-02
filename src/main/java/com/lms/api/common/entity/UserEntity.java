@@ -59,4 +59,9 @@ public class UserEntity extends BaseEntity {
 
   String coursePurpose;
 
+  @ToString.Exclude
+  @OneToMany(mappedBy = "userEntity", cascade = CascadeType.PERSIST, orphanRemoval = false, fetch = FetchType.LAZY)
+  List<CourseEntity> courseEntities = new ArrayList<>();
+
+
 }
