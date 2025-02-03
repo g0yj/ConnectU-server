@@ -4,6 +4,7 @@ import com.lms.api.admin.code.SearchCode;
 import com.lms.api.admin.service.dto.*;
 import com.lms.api.admin.service.dto.user.CreateUser;
 import com.lms.api.admin.service.dto.user.SearchUsers;
+import com.lms.api.admin.service.dto.user.UpdateUser;
 import com.lms.api.admin.service.dto.user.UserList;
 import com.lms.api.common.code.UserType;
 import com.lms.api.common.entity.*;
@@ -18,6 +19,7 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -197,5 +199,38 @@ public class UserAdminService {
     return userRepository.findById(id)
             .map(userAdminServiceMapper::toUser)
             .orElseThrow(() -> new AppException(AppErrorCode.USER_NOT_FOUND));
+  }
+
+  @Transactional
+  public void updateUser(UpdateUser updateUser){
+
+    if (updateUser.getLoginId() != null) {
+      Optional<UserEntity> existingUser = userRepository.findByLoginId(updateUser.getLoginId());
+
+      if (existingUser.isPresent() && !existingUser.get().getId().equals(updateUser.getId())) {
+        throw new AppException(AppErrorCode.LOGIN_SERVER_ERROR);
+      }
+    }
+
+    if (updateUser.getCellPhone() != null) {
+      Optional<UserEntity> existingUser = userRepository.findByCellPhone(updateUser.getCellPhone());
+
+      if (existingUser.isPresent() && !existingUser.get().getId().equals(updateUser.getId())) {
+        throw new AppException(AppErrorCode.CELLPHONE_NOT_MATCH);
+      }
+    }
+
+    userRepository.findById(updateUser.getId())
+            .ifPresentOrElse(
+                    userEntity -> {
+                      userAdminServiceMapper.mapUserEntity(updateUser, userEntity);
+                      if(ObjectUtils.isNotEmpty(updateUser.getPassword())){
+                        userEntity.setPassword(AppUtils.encryptPassword(updateUser.getPassword()));
+                      }
+                    },
+                    () -> {
+                      throw new AppException(AppErrorCode.USER_NOT_FOUND);
+                    }
+            );
   }
 }

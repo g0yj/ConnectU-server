@@ -1,9 +1,9 @@
 package com.lms.api.admin.controller;
-import com.lms.api.admin.controller.dto.user.CreateUserRequest;
-import com.lms.api.admin.controller.dto.user.ListUsersRequest;
-import com.lms.api.admin.controller.dto.user.ListUsersResponse;
+import com.lms.api.admin.controller.dto.user.*;
+import com.lms.api.admin.service.dto.User;
 import com.lms.api.admin.service.dto.user.CreateUser;
 import com.lms.api.admin.service.dto.user.SearchUsers;
+import com.lms.api.admin.service.dto.user.UpdateUser;
 import com.lms.api.admin.service.dto.user.UserList;
 import com.lms.api.common.controller.dto.PageResponse;
 import com.lms.api.common.mapper.ControllerMapper;
@@ -37,4 +37,13 @@ public interface UserAdminControllerMapper {
 
   @Mapping(target = "type", source = "request.type")
   CreateUser toCreateUser(String createdBy, CreateUserRequest request);
+
+  @Mapping(target = "id", source = "id")
+  @Mapping(target = "modifiedBy", source = "modifiedBy")
+  UpdateUser toUpdateUser(String id, String modifiedBy, UpdateUserRequest request);
+
+  @Mapping(target = "createDateTime", source = "createdOn")
+  GetUserResponse toGetUserResponse(User user);
 }
+
+

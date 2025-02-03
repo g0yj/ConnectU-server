@@ -1,12 +1,11 @@
 package com.lms.api.admin.controller;
 
-import com.lms.api.admin.controller.dto.user.CreateUserRequest;
-import com.lms.api.admin.controller.dto.user.ListUsersRequest;
-import com.lms.api.admin.controller.dto.user.ListUsersResponse;
+import com.lms.api.admin.controller.dto.user.*;
 import com.lms.api.admin.service.UserAdminService;
 import com.lms.api.admin.service.dto.User;
 import com.lms.api.admin.service.dto.user.CreateUser;
 import com.lms.api.admin.service.dto.user.SearchUsers;
+import com.lms.api.admin.service.dto.user.UpdateUser;
 import com.lms.api.admin.service.dto.user.UserList;
 import com.lms.api.common.controller.dto.PageResponse;
 import com.lms.api.common.service.dto.LoginInfo;
@@ -49,7 +48,21 @@ public class UserAdminController {
    * 05. 회원상세조회
    */
   @GetMapping("/{id}")
-  public User getUser(@PathVariable String id){
-    return userAdminService.getUser(id);
+  public GetUserResponse getUser(@PathVariable String id){
+    User user = userAdminService.getUser(id);
+    return userAdminControllerMapper.toGetUserResponse(user);
+  }
+
+  /**
+   * 06. 회원수정
+   */
+  @PutMapping("/{id}")
+  public void updateUser(
+          @PathVariable String id,
+          LoginInfo loginInfo,
+          @RequestBody @Valid UpdateUserRequest request){
+    UpdateUser updateUser = userAdminControllerMapper.toUpdateUser(id, loginInfo.getId(), request);
+    userAdminService.updateUser(updateUser);
+
   }
 }
