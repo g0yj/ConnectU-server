@@ -63,6 +63,13 @@ public class UserAdminController {
           @RequestBody @Valid UpdateUserRequest request){
     UpdateUser updateUser = userAdminControllerMapper.toUpdateUser(id, loginInfo.getId(), request);
     userAdminService.updateUser(updateUser);
+  }
 
+  /**
+   * 07. 회원삭제
+   */
+  @DeleteMapping("/{id}")
+  public void deleteUser(@PathVariable String id){
+    userAdminService.deleteUser(id);
   }
 }

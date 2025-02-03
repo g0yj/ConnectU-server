@@ -233,4 +233,9 @@ public class UserAdminService {
                     }
             );
   }
+
+  @Transactional
+  public void deleteUser(String id){
+    userRepository.deleteById(id);
+  }
 }
