@@ -192,4 +192,10 @@ public class UserAdminService {
     return userRepository.save(userEntity);
   }
 
+  @Transactional
+  public User getUser(String id){
+    return userRepository.findById(id)
+            .map(userAdminServiceMapper::toUser)
+            .orElseThrow(() -> new AppException(AppErrorCode.USER_NOT_FOUND));
+  }
 }

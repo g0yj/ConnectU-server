@@ -25,6 +25,8 @@ public enum AppErrorCode implements AppError {
   // auth error
   LOGIN_REQUIRED(HttpStatus.UNAUTHORIZED, "0100", "로그인이 필요합니다."),
   PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST, "0101", "비밀번호가 다릅니다."),
+
+  // user error
   USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "0102", "사용자를 찾을 수 없습니다."),
   USER_INACTIVE(HttpStatus.BAD_REQUEST, "0104", "비활성화 된 사용자입니다."),
   ACCESS_DENIED(HttpStatus.FORBIDDEN, "0105", "접근 권한이 없습니다."),

@@ -4,6 +4,7 @@ import com.lms.api.admin.controller.dto.user.CreateUserRequest;
 import com.lms.api.admin.controller.dto.user.ListUsersRequest;
 import com.lms.api.admin.controller.dto.user.ListUsersResponse;
 import com.lms.api.admin.service.UserAdminService;
+import com.lms.api.admin.service.dto.User;
 import com.lms.api.admin.service.dto.user.CreateUser;
 import com.lms.api.admin.service.dto.user.SearchUsers;
 import com.lms.api.admin.service.dto.user.UserList;
@@ -42,5 +43,13 @@ public class UserAdminController {
   public void createUser(LoginInfo loginInfo, @RequestBody @Valid CreateUserRequest request){
     CreateUser createUser = userAdminControllerMapper.toCreateUser(loginInfo.getId(), request);
     userAdminService.createUser(createUser);
+  }
+
+  /**
+   * 05. 회원상세조회
+   */
+  @GetMapping("/{id}")
+  public User getUser(@PathVariable String id){
+    return userAdminService.getUser(id);
   }
 }
