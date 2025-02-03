@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 public enum UserType {
   A("관리자"),
   S("회원"),
-  T("멘토")
+  T("직원")
   ;
 
   String label;

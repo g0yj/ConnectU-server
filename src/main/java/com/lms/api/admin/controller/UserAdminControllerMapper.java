@@ -1,11 +1,14 @@
 package com.lms.api.admin.controller;
+import com.lms.api.admin.controller.dto.user.CreateUserRequest;
 import com.lms.api.admin.controller.dto.user.ListUsersRequest;
 import com.lms.api.admin.controller.dto.user.ListUsersResponse;
+import com.lms.api.admin.service.dto.user.CreateUser;
 import com.lms.api.admin.service.dto.user.SearchUsers;
 import com.lms.api.admin.service.dto.user.UserList;
 import com.lms.api.common.controller.dto.PageResponse;
 import com.lms.api.common.mapper.ControllerMapper;
 import com.lms.api.common.mapper.ControllerMapperConfig;
+import com.lms.api.common.service.dto.LoginInfo;
 import com.lms.api.common.service.dto.Search;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -31,4 +34,7 @@ public interface UserAdminControllerMapper {
   @Mapping(target = "remainingCount", source = "remainingCount")
   @Mapping(target = "expirationDate", source = "endDate")
   ListUsersResponse toListUsersResponse(UserList user);
+
+  @Mapping(target = "type", source = "request.type")
+  CreateUser toCreateUser(String createdBy, CreateUserRequest request);
 }

@@ -12,7 +12,8 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<UserEntity, String>,
     QuerydslPredicateExecutor<UserEntity> {
-
   Optional<UserEntity> findByLoginId(String loginId);
+  Optional<UserEntity> findByCellPhone(String cellPhone);
+
 
 }

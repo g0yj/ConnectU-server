@@ -2,11 +2,17 @@ package com.lms.api.admin.service;
 
 import com.lms.api.admin.code.SearchCode;
 import com.lms.api.admin.service.dto.*;
+import com.lms.api.admin.service.dto.user.CreateUser;
 import com.lms.api.admin.service.dto.user.SearchUsers;
 import com.lms.api.admin.service.dto.user.UserList;
+import com.lms.api.common.code.UserType;
 import com.lms.api.common.entity.*;
+import com.lms.api.common.exception.AppError;
+import com.lms.api.common.exception.AppErrorCode;
+import com.lms.api.common.exception.AppException;
 import com.lms.api.common.mapper.ServiceMapper;
 import com.lms.api.common.repository.*;
+import com.lms.api.common.util.AppUtils;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
@@ -148,6 +154,42 @@ public class UserAdminService {
     return userListPage;
   }
 
+  @Transactional
+  public UserEntity createUser(CreateUser user) {
+    if(userRepository.findByLoginId(user.getLoginId()).isPresent()){
+      throw new AppException(AppErrorCode.LOGIN_SERVER_ERROR);
+    }
+    if(userRepository.findByCellPhone(user.getCellPhone()).isPresent()){
+      throw new AppException(AppErrorCode.CELLPHONE_NOT_MATCH);
+    }
 
+    UserEntity userEntity = null;
+    switch (user.getType().toString()){
+      case "S":
+        userEntity =
+                userAdminServiceMapper.toUserEntity(
+                        user,
+                        AppUtils.createUserId(),
+                        AppUtils.encryptPassword(user.getPassword()),
+                        UserType.S);
+        break;
+      case "A":
+        userEntity =
+                userAdminServiceMapper.toUserEntity(
+                        user,
+                        AppUtils.createUserId(),
+                        AppUtils.encryptPassword(user.getPassword()),
+                        UserType.A);
+        break;
+      default:
+        userEntity =
+                userAdminServiceMapper.toUserEntity(
+                        user,
+                        AppUtils.createUserId(),
+                        AppUtils.encryptPassword(user.getPassword()),
+                        UserType.T);
+    }
+    return userRepository.save(userEntity);
+  }
 
 }
