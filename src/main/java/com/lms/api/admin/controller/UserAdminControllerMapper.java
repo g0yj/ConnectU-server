@@ -14,6 +14,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 
 @Mapper(componentModel = "spring", config = ControllerMapperConfig.class, uses = {
     ControllerMapper.class})
@@ -44,6 +46,20 @@ public interface UserAdminControllerMapper {
 
   @Mapping(target = "createDateTime", source = "createdOn")
   GetUserResponse toGetUserResponse(User user);
+
+  List<ListUsersExcelResponse> toListUsersExcelResponse (List<User> users);
+  @Mapping(target = "아이디", source = "loginId")
+  @Mapping(target = "이름", source = "name")
+  @Mapping(target = "성별", source = "gender")
+  @Mapping(target = "연락처", source = "cellPhone")
+  @Mapping(target = "이메일", source = "email")
+  @Mapping(target = "주소1", source = "address")
+  @Mapping(target = "주소2", source = "detailedAddress")
+  @Mapping(target = "직장여부", source = "isOfficeWorker")
+  @Mapping(target = "활동여부", source = "active")
+  @Mapping(target = "특이사항", source = "note")
+  ListUsersExcelResponse toListUsersExcelResponse(User user);
+
 }
 
 

@@ -1,6 +1,7 @@
 package com.lms.api.admin.service;
 
 import com.lms.api.admin.code.SearchCode;
+import com.lms.api.admin.controller.dto.user.ListUsersExcelRequest;
 import com.lms.api.admin.service.dto.*;
 import com.lms.api.admin.service.dto.user.CreateUser;
 import com.lms.api.admin.service.dto.user.SearchUsers;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -237,5 +240,109 @@ public class UserAdminService {
   @Transactional
   public void deleteUser(String id){
     userRepository.deleteById(id);
+  }
+
+  @Transactional
+  public List<User> listUsersExcel(ListUsersExcelRequest request){
+    QUserEntity qUserEntity = QUserEntity.userEntity;
+    QCourseEntity qCourseEntity = QCourseEntity.courseEntity;
+    LocalDate now = LocalDate.now();
+
+    BooleanExpression where = Expressions.TRUE;
+
+    // 사용자 유형 필터링
+    if (request.getType() != null) {
+      where = where.and(qUserEntity.type.eq(request.getType()));
+    }
+
+    // 가입일자 필터링
+    if (request.getCreateDateFrom() != null && request.getCreateDateTo() != null) {
+      where = where.and(qUserEntity.createdOn.between(
+              request.getCreateDateFrom().atStartOfDay(),
+              request.getCreateDateTo().atTime(23, 59, 59)
+      ));
+    }
+
+// 과정 만료 여부 필터링 (서브쿼리 내부에서 endDate 처리)
+    BooleanExpression expiredCondition = JPAExpressions
+            .selectOne()
+            .from(qCourseEntity)
+            .where(qCourseEntity.userEntity.id.eq(qUserEntity.id)
+                    .and(qCourseEntity.endDate.isNotNull())
+                    .and(qCourseEntity.endDate.loe(now))) // EXPIRED: endDate가 현재 날짜보다 작거나 같을 때
+            .exists();
+
+    BooleanExpression notExpiredCondition = JPAExpressions
+            .selectOne()
+            .from(qCourseEntity)
+            .where(qCourseEntity.userEntity.id.eq(qUserEntity.id)
+                    .and(qCourseEntity.endDate.isNotNull())
+                    .and(qCourseEntity.endDate.goe(now))) // NOT_EXPIRED: endDate가 현재 날짜보다 클 때
+            .exists();
+
+    if (request.getExpireType() == SearchCode.ExpireType.EXPIRED) {
+      where = where.and(expiredCondition); // 만료된 과정만 필터링
+    } else if (request.getExpireType() == SearchCode.ExpireType.NOT_EXPIRED) {
+      where = where.and(notExpiredCondition); // 만료되지 않은 과정만 필터링
+    }
+
+// 잔여 수업 횟수 필터링 (서브쿼리 내부에서 계산)
+    BooleanExpression remainingCondition = JPAExpressions
+            .selectOne()
+            .from(qCourseEntity)
+            .where(qCourseEntity.userEntity.id.eq(qUserEntity.id)
+                    .and(qCourseEntity.lessonCount.coalesce(0.0f)
+                            .subtract(qCourseEntity.assignmentCount.coalesce(0.0f))
+                            .loe(0.0f)))  // NOT_REMAINING 조건: 잔여 수업 횟수가 0 이하
+            .exists();
+
+    BooleanExpression notRemainingCondition = JPAExpressions
+            .selectOne()
+            .from(qCourseEntity)
+            .where(qCourseEntity.userEntity.id.eq(qUserEntity.id)
+                    .and(qCourseEntity.lessonCount.coalesce(0.0f)
+                            .subtract(qCourseEntity.assignmentCount.coalesce(0.0f))
+                            .gt(0.0f)))  // REMAINING 조건: 잔여 수업 횟수가 0 초과
+            .exists();
+
+    if (request.getRemainingType() == SearchCode.RemainingType.REMAINING) {
+      where = where.and(notRemainingCondition);  // 0 초과인 경우만 필터링
+    } else if (request.getRemainingType() == SearchCode.RemainingType.NOT_REMAINING) {
+      where = where.and(remainingCondition);  // 0 이하인 경우만 필터링
+    }
+
+    // 검색어 필터링
+    if (request.hasSearch()) {
+      switch (request.getSearch()) {
+        case "ALL":
+          where = where.and(
+                  qUserEntity.name.contains(request.getKeyword())
+                          .or(qUserEntity.loginId.contains(request.getKeyword()))
+                          .or(qUserEntity.email.contains(request.getKeyword()))
+                          .or(qUserEntity.cellPhone.contains(request.getKeyword()))
+          );
+          break;
+        case "name":
+          where = where.and(qUserEntity.name.contains(request.getKeyword()));
+          break;
+        case "loginId":
+          where = where.and(qUserEntity.loginId.contains(request.getKeyword()));
+          break;
+        case "email":
+          where = where.and(qUserEntity.email.contains(request.getKeyword()));
+          break;
+        case "cellPhone":
+          where = where.and(qUserEntity.cellPhone.contains(request.getKeyword()));
+          break;
+        default:
+          break;
+      }
+    }
+
+    List<UserEntity> userEntities = (List<UserEntity>) userRepository.findAll(where, Sort.by(Sort.Direction.ASC, "createdOn"));
+
+    return userEntities.stream()
+            .map(userEntity -> userAdminServiceMapper.toUser(userEntity))
+            .collect(Collectors.toList());
   }
 }

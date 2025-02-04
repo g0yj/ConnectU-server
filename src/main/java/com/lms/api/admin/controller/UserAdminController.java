@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @Slf4j
 @RestController
@@ -71,5 +73,14 @@ public class UserAdminController {
   @DeleteMapping("/{id}")
   public void deleteUser(@PathVariable String id){
     userAdminService.deleteUser(id);
+  }
+
+  /**
+   * 08. 회원 엑셀 다운로드
+   */
+  @GetMapping("/excel")
+  public List<ListUsersExcelResponse> listUsersExcel(ListUsersExcelRequest request){
+    List<User> users = userAdminService.listUsersExcel(request);
+    return userAdminControllerMapper.toListUsersExcelResponse(users);
   }
 }
