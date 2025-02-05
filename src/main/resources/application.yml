@@ -5,3 +5,21 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: update
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: jinyjgo@gmail.com
+    password:
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+app:
+  file:
+    host: "http://localhost:8080"
+    upload-dir: "C:/Users/k/Downloads/"
+    max-file-size: 10MB
+
+server:
+  servlet:
+    context-path: /api

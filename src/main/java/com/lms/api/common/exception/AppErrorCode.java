@@ -39,6 +39,8 @@ public enum AppErrorCode implements AppError {
   //중복 error
   CELLPHONE_NOT_MATCH(HttpStatus.BAD_REQUEST, "1001", "중복되는 번호가 있습니다"),
 
+  // email error
+  FAILED_EMAIL_ERROR(HttpStatus.EXPECTATION_FAILED, "1002", "Email 전송에 실패했습니다")
   ;
   HttpStatusCode httpStatusCode;
   String code;
