@@ -9,7 +9,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: jinyjgo@gmail.com
-    password:
+    password: #
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
@@ -19,7 +19,12 @@ app:
     host: "http://localhost:8080"
     upload-dir: "C:/Users/k/Downloads/"
     max-file-size: 10MB
-
+  coolsms:
+    api:
+      key: "#"
+      secret: "#"
+      number: "#"
 server:
   servlet:
     context-path: /api
+
