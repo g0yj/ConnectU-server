@@ -63,5 +63,7 @@ public class UserEntity extends BaseEntity {
   @OneToMany(mappedBy = "userEntity", cascade = CascadeType.PERSIST, orphanRemoval = false, fetch = FetchType.LAZY)
   List<CourseEntity> courseEntities = new ArrayList<>();
 
-
+  @ToString.Exclude
+  @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = false, fetch = FetchType.LAZY)
+  List<EmailEntity> emailEntities = new ArrayList<>();
 }
