@@ -21,6 +21,7 @@ public class EmailRequest {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Recipient {
+        private String id;
         private String name;  // 수신자 이름
         private String email; // 수신자 이메일
     }
