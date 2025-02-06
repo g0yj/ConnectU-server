@@ -64,6 +64,14 @@ public class UserEntity extends BaseEntity {
   List<CourseEntity> courseEntities = new ArrayList<>();
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = false, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "userEntity", cascade = CascadeType.PERSIST, orphanRemoval = false, fetch = FetchType.LAZY)
   List<EmailEntity> emailEntities = new ArrayList<>();
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "userEntity", cascade = CascadeType.PERSIST, orphanRemoval = false, fetch = FetchType.LAZY)
+  List<PaymentEntity> paymentEntities = new ArrayList<>();
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "userEntity", cascade = CascadeType.PERSIST, orphanRemoval = false, fetch = FetchType.LAZY)
+  List<OrderEntity> orderEntities = new ArrayList<>();
 }

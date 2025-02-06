@@ -1,6 +1,5 @@
 package com.lms.api.common.entity;
 
-import com.lms.api.common.code.YN;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -38,9 +37,13 @@ public class CourseEntity extends BaseEntity {
   LocalDate endDate;
 
 
-  @ManyToOne(fetch = FetchType.EAGER)  // LAZY -> EAGER (QueryDSL에서 참조 가능하도록)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "user_id", nullable = false)
   UserEntity userEntity;
+
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "employee_id", nullable = false)
+  EmployeeEntity employeeEntity;
 
   public float getRemainCount() {
     return (lessonCount != null ? lessonCount : 0f) - (assignmentCount != null ? assignmentCount : 0f);

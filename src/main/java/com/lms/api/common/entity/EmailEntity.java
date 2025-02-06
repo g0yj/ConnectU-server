@@ -30,6 +30,6 @@ public class EmailEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", referencedColumnName = "id", insertable = false, updatable = false)
-    private UserEntity user;
+    private UserEntity userEntity;
 
 }
