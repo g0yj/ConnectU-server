@@ -1,6 +1,5 @@
 package com.lms.api.admin.service.dto.company;
 
-import com.lms.api.common.code.Active;
 import com.lms.api.common.service.dto.Search;
 import lombok.AccessLevel;
 import lombok.Getter;

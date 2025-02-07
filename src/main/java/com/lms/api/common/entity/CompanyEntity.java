@@ -31,6 +31,7 @@ public class CompanyEntity extends BaseEntity {
   String bank;
   String account;
   Boolean active; // 거래처 상태
+  String note;
 
 
 

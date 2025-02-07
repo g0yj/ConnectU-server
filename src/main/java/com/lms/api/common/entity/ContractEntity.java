@@ -1,5 +1,6 @@
 package com.lms.api.common.entity;
 
+import com.lms.api.common.code.ContractType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,10 +26,16 @@ public class ContractEntity extends BaseEntity {
 
   String title; // 계약내용
   String content; // 상세내용
+
+  @Enumerated(EnumType.STRING)
+  ContractType type;
   String name; // 담당자
   Long contractAmount; // 계약금액
+  Long unpaid; // 미수금
+  LocalDate payday; // 지불일
   LocalDate startDate; // 계약시작일
   LocalDate endDate; // 계약 종료일
+
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "company_id", nullable = false)

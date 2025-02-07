@@ -134,8 +134,9 @@ public class CompanyService {
     List<Contract> contracts = contractRepository.findByCompanyEntity_Id(id)
             .stream()
             .map(contractServiceMapper::toContract)
+            .sorted(Comparator.comparing(Contract::getEndDate))
             .collect(Collectors.toList());
-    company.setContructs(contracts);
+    company.setContracts(contracts);
 
     return company;
   }

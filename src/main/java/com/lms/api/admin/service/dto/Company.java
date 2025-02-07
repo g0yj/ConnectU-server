@@ -31,8 +31,9 @@ public class Company {
     String bank;
     String account;
     Boolean active; // 거래처 상태
+    String note; // 특이사항
 
-    List<Contract> contructs;
+    List<Contract> contracts;
 
     String createdBy;
     LocalDateTime createdOn;

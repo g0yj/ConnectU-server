@@ -7,11 +7,13 @@ import com.lms.api.common.entity.ContractEntity;
 import com.lms.api.common.mapper.ServiceMapper;
 import com.lms.api.common.mapper.ServiceMapperConfig;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 
 @Mapper(componentModel = "spring", config = ServiceMapperConfig.class, uses = {ServiceMapper.class})
 public interface ContractServiceMapper {
 
   Contract toContract (ContractEntity entity);
+
 
 }

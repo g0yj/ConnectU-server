@@ -16,7 +16,7 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring", config = ServiceMapperConfig.class, uses = {ServiceMapper.class})
 public interface CompanyServiceMapper {
-
+  @Mapping(target = "note", source = "note")
   Company toCompany(CompanyEntity companyEntity);
 
 }
