@@ -32,10 +32,15 @@ public enum AppErrorCode implements AppError {
   ACCESS_DENIED(HttpStatus.FORBIDDEN, "0105", "접근 권한이 없습니다."),
   ID_NOT_EXIST(HttpStatus.BAD_REQUEST, "0106", "없는 아이디입니다."),
 
-  // loginId error
+
+  // loginId error,
   LOGIN_SERVER_ERROR(HttpStatus.CONFLICT, "1400", "동일한 ID가 존재합니다"),
 
+  //company error
+  COMPANY_NOT_FOUND(HttpStatus.BAD_REQUEST,"0201", "업체를 찾을 수 없습니다."),
 
+  //contract error
+  Contract_NOT_FOUND(HttpStatus.BAD_REQUEST,"0301", "계약 정보를 찾을 수 없습니다"),
   //중복 error
   CELLPHONE_NOT_MATCH(HttpStatus.BAD_REQUEST, "1001", "중복되는 번호가 있습니다"),
 
