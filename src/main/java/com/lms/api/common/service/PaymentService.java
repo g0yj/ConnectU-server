@@ -20,8 +20,10 @@ import net.nurigo.sdk.message.response.SingleMessageSentResponse;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,26 +41,25 @@ public class PaymentService {
     private String apiCode;
 
 
+    @Transactional
     public void postPrepare(PrepareData prepareData) throws IamportResponseException, IOException {
         // Optional을 처리하기 위해 isPresent()로 확인
-        Optional<ContractEntity> contract = contractRepository.findById(Long.valueOf(prepareData.getMerchant_uid()));
-        if (contract.isPresent()) {
-            log.debug("결제 상품의 금액이 일치합니다.");
-
-            // PG사 API 호출 전 로그
-            log.debug("PG사 결제 준비 요청을 보냅니다. PrepareData: {}", prepareData);
-
+        Optional<ContractEntity> contractOptional = contractRepository.findById(Long.valueOf(prepareData.getMerchant_uid()));
+        if (contractOptional.isPresent()) {
+            ContractEntity contractEntity = contractOptional.get();
             // PG사 API 호출
             try {
                 api.postPrepare(prepareData);
-                log.debug("PG사 결제 준비 요청이 완료되었습니다.");
             } catch (IamportResponseException e) {
                 log.error("PG사 응답 오류 발생: {}", e.getMessage());
-                throw e;
+                throw e;  // 예외를 다시 던져서 호출한 곳에서 처리할 수 있게 할 수 있습니다.
             } catch (IOException e) {
                 log.error("PG사와의 통신 오류 발생: {}", e.getMessage());
                 throw e;
             }
+            // DB 업데이트
+            Long amount = prepareData.getAmount().longValueExact();
+            contractEntity.setUnpaid(contractEntity.getUnpaid()- amount);
         } else {
             log.error("해당 계약을 찾을 수 없습니다.");
         }

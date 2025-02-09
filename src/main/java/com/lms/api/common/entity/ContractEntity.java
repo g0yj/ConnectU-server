@@ -44,4 +44,9 @@ public class ContractEntity extends BaseEntity {
   @ToString.Exclude
   @OneToMany(mappedBy = "contractEntity", cascade = CascadeType.PERSIST, orphanRemoval = false, fetch = FetchType.LAZY)
   List<ContractFileEntity> contractFileEntities = new ArrayList<>();
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "contractEntity", cascade = CascadeType.PERSIST, orphanRemoval = false, fetch = FetchType.LAZY)
+  List<SpendEntity> spendEntities = new ArrayList<>();
+
 }

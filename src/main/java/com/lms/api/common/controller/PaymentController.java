@@ -26,7 +26,7 @@ import java.math.BigDecimal;
 public class PaymentController {
 
     private final PaymentService paymentService;
-    /**14. 결제 사전 검증
+    /**14. 결제
      *  얼만큼 결제가 이뤄어져야하는지 확인하기 위함 ->주문 결제금액이 다를 경우 pg사 결제창 호출이 중단
      * */
     @PostMapping("/prepare")
