@@ -13,7 +13,22 @@ spring:
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html # Swagger UI 경로를 강제 지정
+  enable-spring-security: false
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics,loggers,env,beans,mappings"
+  endpoint:
+    health:
+      show-details: always
 app:
   file:
     host: "http://localhost:8080"
