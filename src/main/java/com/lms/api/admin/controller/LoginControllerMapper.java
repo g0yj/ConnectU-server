@@ -8,11 +8,9 @@ import com.lms.api.common.mapper.ControllerMapperConfig;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.List;
-
 @Mapper(componentModel = "spring", config = ControllerMapperConfig.class, uses = {
     ControllerMapper.class})
-public interface AdminControllerMapper {
+public interface LoginControllerMapper {
     @Mapping(target = "loginId", source = "id")
     Login toLogin(LoginRequest loginRequest);
 

@@ -1,7 +1,9 @@
 package com.lms.api.admin.service;
 
+import com.lms.api.admin.controller.dto.user.CreateUserRequest;
 import com.lms.api.admin.service.dto.Login;
 import com.lms.api.common.code.LoginType;
+import com.lms.api.common.entity.UserEntity;
 import com.lms.api.common.entity.UserLoginEntity;
 import com.lms.api.common.exception.AppErrorCode;
 import com.lms.api.common.exception.AppException;
@@ -11,6 +13,10 @@ import com.lms.api.common.service.dto.LoginInfo;
 import com.lms.api.common.util.AppUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +24,11 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class LoginService {
+public class LoginService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final UserLoginRepository userLoginRepository;
+    private final PasswordEncoder passwordEncoder;
     @Transactional
     public Login login(Login login, LoginType loginType) {
         return userRepository.findByLoginId(login.getLoginId()).map(user -> {
@@ -70,5 +77,39 @@ public class LoginService {
     public void logoutAdmin(String token) {
         userLoginRepository.findByToken(token)
                 .ifPresent(userLoginEntity -> userLoginRepository.deleteAllByUserEntity(userLoginEntity.getUserEntity()));
+    }
+
+    /**
+     * 스프링 시큐리티를 사용한 로그인 방법
+     * 1. implements UserDetailsService
+     * 2. 오바리이드 loadUserByUsername -> role이 필요하기 때문에 엔티티에 필드 추가함! -> 엔티티에 implement 하고 오버라이드 할 거 있음!
+     */
+
+    @Override
+    public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
+        log.debug("서비스 로직 들어옴 loginId: {}", loginId);
+        return userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new AppException(AppErrorCode.ID_NOT_EXIST));
+    }
+
+    @Transactional
+    public void signUp(CreateUserRequest request) {
+        log.debug("서비스 = {}  ", request);
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        UserEntity newUser = UserEntity.builder()
+                .name(request.getName())
+                .loginId(request.getLoginId())
+                .email(request.getEmail())
+                .password(encodedPassword) //
+                .gender(request.getGender())
+                .cellPhone(request.getCellPhone())
+                .type(request.getType())
+                .active(request.isActive())
+                .build();
+
+        userRepository.save(newUser);
+
+        log.debug("회원가입 완료: {}",newUser);
+
     }
 }
