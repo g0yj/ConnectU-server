@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -32,14 +33,20 @@ public class SecurityConfig {
                                 "/v3/api-docs.yaml"
                         ).permitAll()
                         //  로그인, 회원가입도 인증 없이 허용
-                        .requestMatchers("/admin/v1/security/login", "/admin/v1/signup", "/admin/v1/login","/admin/v1/**").permitAll() // ✅ 로그인 API는 인증 없이 접근 가능
+                        .requestMatchers("/login", "/admin/v1/security/login", "/admin/v1/signup", "/admin/v1/login","/admin/v1/**").permitAll() // ✅ 로그인 API는 인증 없이 접근 가능
                         .requestMatchers("/admin/**").hasRole("ADMIN") //
+                        .requestMatchers("/user/**").hasRole("USER")
 
                         //  나머지 모든 요청은 인증된 사용자만 접근 가능
                         .anyRequest().authenticated()
                 )
+                .formLogin(login -> login
+                        .loginPage("/login") // 로그인 페이지 경로 설정
+                        .successHandler(customAuthenticationSuccessHandler()) // 로그인 성공 후 핸들러 설정
+                        .permitAll()
+                )
                 .logout(logout -> logout
-                        .logoutUrl("/logout") //  로그아웃 URL을 "/logout"으로 설정
+                        .logoutUrl("/admin/v1/logout") //  로그아웃 URL을 "/logout"으로 설정
                         .logoutSuccessUrl("/login") // 로그아웃 성공 후 "/login"으로 이동
                         .invalidateHttpSession(true) //  세션 무효화
                         .deleteCookies("JSESSIONID") // JSESSIONID 쿠키 삭제
@@ -69,6 +76,14 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    /**
+     * 로그인 성공 후 권한에 따라 다른 페이지로 이동하는 핸들러 설정
+     */
+    @Bean
+    public AuthenticationSuccessHandler customAuthenticationSuccessHandler() {
+        return new CustomLoginSuccessHandler();
     }
 
     @Bean

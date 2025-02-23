@@ -80,9 +80,9 @@ public class LoginService implements UserDetailsService {
     }
 
     /**
-     * 스프링 시큐리티를 사용한 로그인 방법
+     * 스프링 시큐리티를 사용한 로그인 방법 (기존 로그인 방식에서 리팩토리 과정에서 생성됨. role을 type이 대체하고 있음
      * 1. implements UserDetailsService
-     * 2. 오바리이드 loadUserByUsername -> role이 필요하기 때문에 엔티티에 필드 추가함! -> 엔티티에 implement 하고 오버라이드 할 거 있음!
+     * 2. 오버리이드 loadUserByUsername -> role이 필요하기 때문에 엔티티에 필드 추가함! -> 엔티티에 implement 하고 오버라이드 할 거 있음!
      */
 
     @Override
@@ -91,6 +91,7 @@ public class LoginService implements UserDetailsService {
         return userRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new AppException(AppErrorCode.ID_NOT_EXIST));
     }
+
 
     @Transactional
     public void signUp(CreateUserRequest request) {

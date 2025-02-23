@@ -18,11 +18,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Map;
 
 @RestController
-@RequestMapping("/admin/v1")
+@RequestMapping
 @RequiredArgsConstructor
 @Slf4j
 public class LoginController {
@@ -31,7 +32,7 @@ public class LoginController {
     private final AuthenticationManager authenticationManager;
 
     @Operation(summary = "회원 타입으로 권한을 주는 방식의 로그인", description = "타입이 관리자냐 회원이냐에 따라 접근 권한을 다르게 합니다. 토큰을 사용하는 로그인 방식으로 별도로 login상태 테이블을 사용하고 있습니다")
-    @PostMapping("/login")
+    @PostMapping("/admin/v1/login")
     public LoginResponse login(@RequestBody @Valid LoginRequest loginRequest){
         Login login = loginService.login(adminControllerMapper.toLogin(loginRequest), LoginType.ADMIN);
 
@@ -39,8 +40,8 @@ public class LoginController {
 
         return adminControllerMapper.toLoginResponse(login);
     }
-    @Operation(summary = "회원 타입으로 권한을 주는 방식의 로그아웃", description = "")
-    @PostMapping("/logout")
+    @Operation(summary = "회원 타입으로 권한을 주는 방식의 로그아웃", description = "로그인 시 로그인 테이블을 통해 상태를 유지하고 있습니다. 저장된 토큰을 삭제 하는 방식입니다")
+    @PostMapping("/admin/v1/logout")
     public void logout(LoginInfo loginInfo) {
         log.debug("logout: token={}", loginInfo.getToken());
         loginService.logoutAdmin(loginInfo.getToken());
@@ -80,7 +81,17 @@ public class LoginController {
         return ResponseEntity.ok("회원가입 성공");
     }
 
+    @Operation(summary = "타임리프 사용 시 로그인 화면으로 이동", description = "기본 URL(`http://localhost:8080`)에서 로그인 페이지로 리다이렉트")
+    @GetMapping("/")
+    public String root(){
+        return "redirect:/login";
+    }
 
+    @Operation(summary = "타임리프 사용시, 로그인 페이지 출력" , description = "login.html 뷰를 반환합니다")
+    @GetMapping("/login")
+    public ModelAndView loginPage(){
+        return new ModelAndView("login");
+    }
 }
 
 
