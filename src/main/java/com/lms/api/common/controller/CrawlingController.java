@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/crawling")
+@RequestMapping("/admin/v1/crawling")
 @RequiredArgsConstructor
 public class CrawlingController {
 
